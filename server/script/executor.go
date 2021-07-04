@@ -48,6 +48,7 @@ func (e *Executor) ConvertScriptInputToCmdInput(ei *ExecutionInput, scriptPath s
 		IsSudo:     ei.IsSudo,
 		TimeoutSec: int(ei.Timeout.Seconds()),
 		ClientID:   ei.Client.ID,
+		IsScript:   true,
 	}
 }
 
@@ -112,7 +113,7 @@ func (e *Executor) createShell(cl *clients.Client, isPowershell bool) string {
 func (e *Executor) createScriptCommand(cl *clients.Client, scriptPath string, isPowerShell bool) string {
 	if e.isWindowsClient(cl) {
 		if isPowerShell {
-			return fmt.Sprintf("-executionpolicy bypass -file %s; powershell Remove-Item %s", scriptPath, scriptPath)
+			return fmt.Sprintf("%s; powershell Remove-Item %s", scriptPath, scriptPath)
 		}
 
 		return fmt.Sprintf("%s & del %s", scriptPath, scriptPath)

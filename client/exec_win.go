@@ -9,7 +9,7 @@ import (
 	"syscall"
 )
 
-func (e *CmdExecutorImpl) New(ctx context.Context, shell, command, cwd string, isSudo bool) *exec.Cmd {
+func (e *CmdExecutorImpl) New(ctx context.Context, execCtx *CmdExecutorContext) *exec.Cmd {
 	// workaround for the issue with escaping args on windows for cmd shell https://github.com/golang/go/issues/1849
 	if shell == cmdShell {
 		cmd := exec.CommandContext(ctx, shell)

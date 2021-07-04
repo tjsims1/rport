@@ -38,7 +38,7 @@ func TestConvertScriptInputToCmdInput(t *testing.T) {
 			cwd:                    "C:\\",
 			scriptPath:             "C:\\script.sh",
 			timeout:                time.Second,
-			epxectedCommand:        "-executionpolicy bypass -file C:\\script.sh; powershell Remove-Item C:\\script.sh",
+			epxectedCommand:        "C:\\script.sh; powershell Remove-Item C:\\script.sh",
 			expectedSecondsTimeout: 1,
 			expectedShell:          "powershell",
 		},
