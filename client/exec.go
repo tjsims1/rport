@@ -162,6 +162,8 @@ func (c *Client) HandleRunCmdRequest(ctx context.Context, reqPayload []byte) (*c
 	cmd.Stdout = &stdOut
 	cmd.Stderr = &stdErr
 
+	c.Debugf("Generated command is %s", cmd.String())
+
 	startedAt := now()
 	err = c.cmdExec.Start(cmd)
 	if err != nil {
