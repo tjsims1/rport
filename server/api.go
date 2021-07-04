@@ -1648,6 +1648,7 @@ func (al *APIListener) executeMultiClientJob(job *models.MultiJob, orderedClient
 				job.Cwd,
 				job.TimeoutSec,
 				job.IsSudo,
+				job.IsScript,
 				client,
 			)
 		} else {
@@ -1659,6 +1660,7 @@ func (al *APIListener) executeMultiClientJob(job *models.MultiJob, orderedClient
 				job.Cwd,
 				job.TimeoutSec,
 				job.IsSudo,
+				job.IsScript,
 				client,
 			)
 			if !success {
@@ -1688,7 +1690,7 @@ func (al *APIListener) executeMultiClientJob(job *models.MultiJob, orderedClient
 func (al *APIListener) createAndRunJob(
 	jid, cmd, shell, createdBy, cwd string,
 	timeoutSec int,
-	isSudo bool,
+	isSudo, isScript bool,
 	client *clients.Client,
 ) bool {
 	// send the command to the client
@@ -1702,6 +1704,7 @@ func (al *APIListener) createAndRunJob(
 		Command:    cmd,
 		Cwd:        cwd,
 		IsSudo:     isSudo,
+		IsScript:   isScript,
 		Shell:      shell,
 		CreatedBy:  createdBy,
 		TimeoutSec: timeoutSec,
