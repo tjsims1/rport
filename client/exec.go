@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
 	"regexp"
 	"runtime"
@@ -107,7 +108,7 @@ var shellOptionsCommand = map[string][]string{
 
 var shellOptionsScript = map[string][]string{
 	powerShell: {
-		"-file",
+		"-File",
 	},
 }
 
@@ -181,6 +182,16 @@ func (c *Client) HandleRunCmdRequest(ctx context.Context, reqPayload []byte) (*c
 
 	// observe the cmd execution in background
 	go func() {
+		if job.IsScript {
+			defer func() {
+				c.Debugf("will delete script %s after execution", job.Command)
+				err := os.Remove(job.Command)
+				if err != nil {
+					c.Errorf("failed to delete script %s: %v", job.Command, err)
+				}
+			}()
+		}
+
 		c.Debugf("started to observe cmd [jid=%q,pid=%d]", job.JID, res.Pid)
 
 		// after timeout stop observing but leave the cmd running

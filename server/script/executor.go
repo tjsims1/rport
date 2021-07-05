@@ -39,10 +39,8 @@ func NewExecutor(logger *chshare.Logger) *Executor {
 }
 
 func (e *Executor) ConvertScriptInputToCmdInput(ei *ExecutionInput, scriptPath string) *api.ExecuteCommandInput {
-	command := e.createScriptCommand(ei.Client, scriptPath, ei.IsPowershell)
-
 	return &api.ExecuteCommandInput{
-		Command:    command,
+		Command:    scriptPath,
 		Shell:      e.createShell(ei.Client, ei.IsPowershell),
 		Cwd:        ei.Cwd,
 		IsSudo:     ei.IsSudo,
@@ -108,17 +106,4 @@ func (e *Executor) createShell(cl *clients.Client, isPowershell bool) string {
 	}
 
 	return ""
-}
-
-func (e *Executor) createScriptCommand(cl *clients.Client, scriptPath string, isPowerShell bool) string {
-	if e.isWindowsClient(cl) {
-		if isPowerShell {
-			return fmt.Sprintf("%s; powershell Remove-Item %s", scriptPath, scriptPath)
-		}
-
-		return fmt.Sprintf("%s & del %s", scriptPath, scriptPath)
-
-	}
-
-	return fmt.Sprintf("sh %s; rm %s", scriptPath, scriptPath)
 }
