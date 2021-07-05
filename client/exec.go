@@ -184,10 +184,11 @@ func (c *Client) HandleRunCmdRequest(ctx context.Context, reqPayload []byte) (*c
 	go func() {
 		if job.IsScript {
 			defer func() {
-				c.Debugf("will delete script %s after execution", job.Command)
 				err := os.Remove(job.Command)
 				if err != nil {
 					c.Errorf("failed to delete script %s: %v", job.Command, err)
+				} else {
+					c.Debugf("deleted script %s after execution", job.Command)
 				}
 			}()
 		}
