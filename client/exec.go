@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"golang.org/x/text/encoding/unicode"
 	"os"
 	"os/exec"
 	"regexp"
@@ -225,18 +224,10 @@ func (c *Client) HandleRunCmdRequest(ctx context.Context, reqPayload []byte) (*c
 		job.PID = &res.Pid
 		job.StartedAt = startedAt
 
-		if job.Shell == powerShell {
-			dec := unicode.UTF8BOM.NewDecoder()
-			decoded, _ := dec.Bytes(stdOut.Bytes())
-			job.Result = &models.JobResult{
-				StdOut: string(decoded),
-				StdErr: stdErr.String(),
-			}
-		} else {
-			job.Result = &models.JobResult{
-				StdOut: stdOut.String(),
-				StdErr: stdErr.String(),
-			}
+		fmt.Println(stdOut.Bytes())
+		job.Result = &models.JobResult{
+			StdOut: stdOut.String(),
+			StdErr: stdErr.String(),
 		}
 
 		// send the filled job to the server
