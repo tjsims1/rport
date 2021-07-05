@@ -29,6 +29,7 @@ type CmdExecutor interface {
 	New(ctx context.Context, execCtx *CmdExecutorContext) *exec.Cmd
 	Start(cmd *exec.Cmd) error
 	Wait(cmd *exec.Cmd) error
+	DecodeOutput(output string) (string, error)
 }
 
 type CmdExecutorImpl struct {
@@ -233,10 +234,26 @@ func (c *Client) HandleRunCmdRequest(ctx context.Context, reqPayload []byte) (*c
 				StdErr: stdErr.String(),
 			}
 		} else {
-			job.Result = &models.JobResult{
-				StdOut: stdOut.String(),
-				StdErr: stdErr.String(),
-			}
+
+		}
+
+		stdOutRawStr := stdOut.String()
+		stdOutStr, err := c.cmdExec.DecodeOutput(stdOutRawStr)
+		if err != nil {
+			c.Errorf("failed to decode output %s: %v", stdOutRawStr, err)
+			stdOutStr = stdOutRawStr
+		}
+
+		stdErrRawStr := stdErr.String()
+		stdErrStr, err := c.cmdExec.DecodeOutput(stdErrRawStr)
+		if err != nil {
+			c.Errorf("failed to decode output %s: %v", stdErrRawStr, err)
+			stdErrStr = stdErrRawStr
+		}
+
+		job.Result = &models.JobResult{
+			StdOut: stdOutStr,
+			StdErr: stdErrStr,
 		}
 
 		// send the filled job to the server

@@ -103,6 +103,10 @@ func (e *CmdExecutorMock) Wait(cmd *exec.Cmd) error {
 	return nil
 }
 
+func (e *CmdExecutorMock) DecodeOutput(output string) (string, error) {
+	return output, nil
+}
+
 // nowMock is used to override time now.
 var nowMockF = func() time.Time {
 	n, _ := time.Parse(time.RFC3339, "2020-08-19T12:00:00+03:00")

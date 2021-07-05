@@ -20,3 +20,9 @@ func (e *CmdExecutorImpl) New(ctx context.Context, execCtx *CmdExecutorContext) 
 
 	return e.newCmd(ctx, execCtx)
 }
+
+func (e *CmdExecutorImpl) DecodeOutput(output string) (string, error) {
+	decoder := charmap.CodePage850.NewDecoder()
+	dec, err := decoder.Bytes(stdOut.Bytes())
+	return string(dec), err
+}
