@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"golang.org/x/text/encoding/unicode"
 	"io"
 	"os"
 	"time"
@@ -51,6 +52,15 @@ func (e *Executor) ConvertScriptInputToCmdInput(ei *ExecutionInput, scriptPath s
 }
 
 func (e *Executor) CreateScriptOnClient(scriptInput *ExecutionInput) (scriptPath string, err error) {
+	if scriptInput.IsPowershell {
+		uni := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM)
+		encoded, err := uni.NewEncoder().Bytes(scriptInput.ScriptBody)
+		if err != nil {
+			return scriptPath, err
+		}
+		scriptInput.ScriptBody = encoded
+	}
+
 	fileInput := &models.File{
 		Name:      e.createClientScriptPath(scriptInput.Client, scriptInput.IsPowershell),
 		Content:   scriptInput.ScriptBody,
