@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"golang.org/x/text/encoding/charmap"
 	"os"
 	"os/exec"
 	"regexp"
@@ -224,10 +225,18 @@ func (c *Client) HandleRunCmdRequest(ctx context.Context, reqPayload []byte) (*c
 		job.PID = &res.Pid
 		job.StartedAt = startedAt
 
-		fmt.Println(stdOut.Bytes())
-		job.Result = &models.JobResult{
-			StdOut: stdOut.String(),
-			StdErr: stdErr.String(),
+		if job.Shell == powerShell {
+			decoder := charmap.CodePage850.NewDecoder()
+			dec, _ := decoder.Bytes(stdOut.Bytes())
+			job.Result = &models.JobResult{
+				StdOut: string(dec),
+				StdErr: stdErr.String(),
+			}
+		} else {
+			job.Result = &models.JobResult{
+				StdOut: stdOut.String(),
+				StdErr: stdErr.String(),
+			}
 		}
 
 		// send the filled job to the server
