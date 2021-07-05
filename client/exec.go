@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/cloudradar-monitoring/rport/share/enc"
 	"os"
 	"os/exec"
 	"regexp"
@@ -28,6 +29,7 @@ type CmdExecutor interface {
 	New(ctx context.Context, execCtx *CmdExecutorContext) *exec.Cmd
 	Start(cmd *exec.Cmd) error
 	Wait(cmd *exec.Cmd) error
+	ConvertOutputIfNeeded(shell, in string) string
 }
 
 type CmdExecutorImpl struct {
@@ -43,6 +45,14 @@ func (e *CmdExecutorImpl) Start(cmd *exec.Cmd) error {
 
 func (e *CmdExecutorImpl) Wait(cmd *exec.Cmd) error {
 	return cmd.Wait()
+}
+
+func (e *CmdExecutorImpl) ConvertOutputIfNeeded(shell, in string) string {
+	if shell != powerShell {
+		return in
+	}
+
+	return enc.RemoveBomBytes(in)
 }
 
 func (e *CmdExecutorImpl) newCmd(ctx context.Context, execCtx *CmdExecutorContext) *exec.Cmd {
@@ -223,9 +233,10 @@ func (c *Client) HandleRunCmdRequest(ctx context.Context, reqPayload []byte) (*c
 		job.Status = status
 		job.PID = &res.Pid
 		job.StartedAt = startedAt
+
 		job.Result = &models.JobResult{
-			StdOut: stdOut.String(),
-			StdErr: stdErr.String(),
+			StdOut: c.cmdExec.ConvertOutputIfNeeded(job.Shell, stdOut.String()),
+			StdErr: c.cmdExec.ConvertOutputIfNeeded(job.Shell, stdErr.String()),
 		}
 
 		// send the filled job to the server
