@@ -62,7 +62,7 @@ func TestConvertScriptInputToCmdInput(t *testing.T) {
 			cwd:                    "/root/here",
 			scriptPath:             "/tmp/script.sh",
 			timeout:                time.Minute,
-			epxectedCommand:        "sh /tmp/script.sh",
+			epxectedCommand:        "/tmp/script.sh",
 			expectedSecondsTimeout: 60,
 		},
 	}
