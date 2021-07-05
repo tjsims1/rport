@@ -53,8 +53,8 @@ func (e *Executor) ConvertScriptInputToCmdInput(ei *ExecutionInput, scriptPath s
 
 func (e *Executor) CreateScriptOnClient(scriptInput *ExecutionInput) (scriptPath string, err error) {
 	if scriptInput.IsPowershell {
-		uni := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM)
-		encoded, err := uni.NewEncoder().Bytes(scriptInput.ScriptBody)
+		enc := unicode.UTF8BOM.NewEncoder()
+		encoded, err := enc.Bytes(scriptInput.ScriptBody)
 		if err != nil {
 			return scriptPath, err
 		}
