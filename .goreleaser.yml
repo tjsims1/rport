@@ -21,7 +21,6 @@ builds:
       - mips64
       - mips64le
       - s390x
-      - ppc64
     goarm:
       - 6
       - 7
@@ -38,6 +37,19 @@ builds:
         goarch: arm
       - goos: linux
         goarch: ppc64
+      - goos: windows
+        goarch: ppc64
+      - goos: darwin
+        goarch: ppc64
+  - id: rport-aix-ppc64
+    main: ./cmd/rport
+    binary: rport
+    ldflags:
+      - "-s -w -X {{.Env.PROJECT}}/share.BuildVersion={{.Version}}"
+    goos:
+      - aix
+    goarch:
+      - ppc64
   - id: rport-linux-amd64
     main: ./cmd/rport
     binary: rport
@@ -72,6 +84,7 @@ archives:
       windows: Windows
       386: i386
       amd64: x86_64
+      aix: IBM Aix
     files:
       - rport.example.conf
   - id: all

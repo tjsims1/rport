@@ -2,9 +2,8 @@ name: Release
 
 on:
   push:
-    tags:
-      - '*'
-
+    branches:
+      - 'added_ppc64'
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
